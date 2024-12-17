@@ -1,14 +1,18 @@
-const { src, dest, watch, series } = require('gulp');
+const { src, dest, series } = require('gulp');
 const sass = require('gulp-sass')(require('sass'));
+const chokidar = require('chokidar');
 
 function buildStyles() {
-  return src('scss/**/*.scss')
+  return src('scss/*/.scss')
     .pipe(sass().on('error', sass.logError))
     .pipe(dest('css'));
 }
 
 function watchTask() {
-  watch(['scss/**/*.scss'], buildStyles);
+  chokidar.watch('scss/*/.scss').on('all', (event, path) => {
+    console.log(`${event} detected on ${path}, running buildStyles...`);
+    buildStyles();
+  });
 }
 
 exports.default = series(buildStyles, watchTask);
